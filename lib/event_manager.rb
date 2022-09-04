@@ -1,15 +1,8 @@
 require 'csv'
 
+# Make any zip code into a five-digit zip code
 def clean_zipcode(zipcode)
-  zipcode ||= '0'
-
-  if zipcode.length < 5
-    zipcode.rjust(5, '0')
-  elsif zipcode.length > 5
-    zipcode[0..4]
-  else
-    zipcode
-  end
+  zipcode.to_s.rjust(5, '0')[0..4]
 end
 
 puts 'Event Manager Initialized!'
