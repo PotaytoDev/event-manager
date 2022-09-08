@@ -39,6 +39,18 @@ def save_thank_you_letter(id, personal_letter)
   end
 end
 
+def clean_phone_number(phone_number)
+  phone_number = phone_number.split(/\D/).join
+
+  phone_number = phone_number[1..] if phone_number.length == 11 && phone_number[0] == '1'
+
+  if phone_number.length == 10
+    "(#{phone_number[0..2]}) #{phone_number[3..5]}-#{phone_number[6..]}"
+  else
+    'Invalid phone number'
+  end
+end
+
 puts 'Event Manager Initialized!'
 
 contents = CSV.open(
@@ -54,9 +66,14 @@ contents.each do |row|
   id = row[0]
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
-  legislators = legislators_by_zipcode(zipcode)
+  # legislators = legislators_by_zipcode(zipcode)
+  phone_number = clean_phone_number(row[:homephone])
 
-  personal_letter = erb_template.result(binding)
+  puts '-----------'
+  puts "Name: #{name}"
+  puts "Phone Number: #{phone_number}"
 
-  save_thank_you_letter(id, personal_letter)
+  # personal_letter = erb_template.result(binding)
+
+  # save_thank_you_letter(id, personal_letter)
 end
