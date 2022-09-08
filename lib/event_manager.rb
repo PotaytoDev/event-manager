@@ -29,6 +29,16 @@ def legislators_by_zipcode(zipcode)
   end
 end
 
+def save_thank_you_letter(id, personal_letter)
+  Dir.mkdir('output') unless Dir.exist?('output')
+
+  filename = "output/thanks_#{id}.html"
+
+  File.open(filename, 'w') do |file|
+    file.puts personal_letter
+  end
+end
+
 puts 'Event Manager Initialized!'
 
 contents = CSV.open(
@@ -48,11 +58,5 @@ contents.each do |row|
 
   personal_letter = erb_template.result(binding)
 
-  Dir.mkdir('output') unless Dir.exist?('output')
-
-  filename = "output/thanks_#{id}.html"
-
-  File.open(filename, 'w') do |file|
-    file.puts personal_letter
-  end
+  save_thank_you_letter(id, personal_letter)
 end
