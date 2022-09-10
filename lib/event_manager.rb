@@ -52,13 +52,26 @@ def clean_phone_number(phone_number)
   end
 end
 
-def find_peak_registration_hours(registrations_at_each_hour)
+def find_peak_registration_time(registration_dates)
   # Sort number of registrations per hour from highest to lowest
-  registrations_at_each_hour = registrations_at_each_hour.sort_by { |_key, value| value }.reverse.to_h
+  registration_dates = registration_dates.sort_by { |_key, value| value }.reverse.to_h
 
-  peak_registration_hour = registrations_at_each_hour.values[0]
-  peak_hours = registrations_at_each_hour.select { |_key, value| value == peak_registration_hour }
-  peak_hours.sort_by { |key, _value| key }.to_h
+  peak_registration_date = registration_dates.values[0]
+  peak_registration_times = registration_dates.select { |_key, value| value == peak_registration_date }
+  peak_registration_times.sort_by { |key, _value| key }.to_h
+end
+
+def display_peak_registrations(peak_registration_times, time)
+  time = peak_registration_times.length > 1 ? "#{time}s are" : "#{time} is"
+
+  puts "\n\nThe peak registration #{time}:"
+  puts peak_registration_times.keys.join(', ')
+
+  if peak_registration_times.length > 1
+    puts "With #{peak_registration_times.values.first} registrations each."
+  else
+    puts "With #{peak_registration_times.values.first} registrations."
+  end
 end
 
 puts 'Event Manager Initialized!'
@@ -84,6 +97,7 @@ contents.each do |row|
   registration_date_and_time = Time.strptime(row[:regdate], '%m/%d/%y %k:%M')
 
   registrations_at_each_hour[registration_date_and_time.strftime('%l %p').strip] += 1
+  registrations_at_each_day[registration_date_and_time.strftime('%A')] += 1
 
   puts '-----------'
   puts "Name: #{name}"
@@ -96,8 +110,8 @@ contents.each do |row|
   # save_thank_you_letter(id, personal_letter)
 end
 
-peak_hours = find_peak_registration_hours(registrations_at_each_hour)
+peak_hours = find_peak_registration_time(registrations_at_each_hour)
+peak_days = find_peak_registration_time(registrations_at_each_day)
 
-puts "\n\nThe peak registration hours are:"
-puts peak_hours.keys.join(', ')
-puts "With #{peak_hours.values.first} registrations each."
+display_peak_registrations(peak_hours, 'hour')
+display_peak_registrations(peak_days, 'day')
